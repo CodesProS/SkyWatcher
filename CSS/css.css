@@ -235,6 +235,12 @@ html, body
   box-sizing: border-box;
 }
 
+.vertical
+{
+  display: flex;
+  flex-direction: column;
+}
+
 #clickable {
   display: block;
   text-decoration: none;
