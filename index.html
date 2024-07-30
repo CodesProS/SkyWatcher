@@ -4,7 +4,7 @@
     <head>
         <meta charset="utf-8">
         <title>SkyWatcher</title>
-        <link rel="stylesheet" href="CSS\css.css">
+        <link rel="stylesheet" href="css/Css.css">
         <link rel="icon" href="Images\cloudy-day.png">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,7 +21,7 @@
 var city = 'Mumbai';
 var bar = "";
        document.addEventListener('DOMContentLoaded', function() {
-    const weatherData = {
+    /*const weatherData = {
         temperature: [27, 28, 29, 30, 29, 29, 28],
         humidity: 82,
         windSpeed: 8,
@@ -29,7 +29,17 @@ var bar = "";
         uvIndex: 4,
         feelsLike: 30,
         chanceOfRain: 42
-    };
+    };*/
+
+    const deviceType = detectDeviceType();
+        if(deviceType == "Mobile")
+       {
+           document.getElementById('container').classList.remove("horizontal");
+           document.getElementById('container').classList.add("vertical");
+           document.getElementById('left').style.width = "100%";
+           document.getElementById('ri').style.width = "100%";
+        }
+        console.log(deviceType);
 
     function createring(data) {
         document.getElementById('chart').innerHTML = "";
@@ -138,8 +148,6 @@ bar = comparisonChart;
     });*/
 
     const apiKey = '8a548b351297cf62646667f93bddb05b';
-    
-    var chanceOfRain = 70;
 
     async function getWeather() {
         try {
@@ -158,6 +166,7 @@ bar = comparisonChart;
         const temperature = (data.main.temp - 273.15).toFixed(1);
         const humidity = data.main.humidity;
         const des = data.weather[0].description;
+        const pres = data.main.pressure;
 
         const timestamp = data.dt * 1000;
         const timezoneOffset = data.timezone * 1000;
@@ -173,10 +182,11 @@ bar = comparisonChart;
         document.getElementById("vis").innerHTML = data.visibility + " m";
         document.getElementById("feels").innerHTML = (data.main.feels_like - 273.15).toFixed(1) + " °C";
 
-        document.getElementById('chanceOfRain').style.width = (chanceOfRain + 10) + '%';
+        document.getElementById('pcloud').style.width = (data.clouds.all) + '%';
         document.getElementById('feelsli').style.width = (data.main.feels_like - 273.15).toFixed(1) * 2 + "%";
         document.getElementById('wspeed').innerHTML = data.wind.speed + " m/s";
         document.getElementById('cloudiness').innerHTML = data.clouds.all + "%";
+        document.getElementById('pressure').innerHTML = (pres) + " hPa";
         console.log("h y");
 
         document.getElementById('wi').innerHTML = des.charAt(0).toUpperCase() + des.slice(1);
@@ -194,6 +204,9 @@ bar = comparisonChart;
         console.log("code " + iconCode);
         var icon = "";
         document.getElementById('dcloud').style.display = "none";
+        document.getElementById('cloud1').style.display = "block";
+        document.getElementById('cloud2').style.display = "block";
+        document.getElementById('cloud3').style.display = "block";
         switch (true) {
         case (iconCode >= 200 && iconCode < 300):
             icon = "Images/lightning-bolt-.png";
@@ -223,6 +236,12 @@ bar = comparisonChart;
         
         document.querySelectorAll('.cloudright').forEach(element => {
         element.src = icon;
+        if(icon == "")
+        {
+            element.style.display = "none";
+        }
+        else
+        {
         if(icon != "Images/cloud.png") {
             element.style.height = "100px";
             element.style.width = "100px";
@@ -230,11 +249,17 @@ bar = comparisonChart;
         else {
             element.style.height = "48px";
             element.style.width = "150px";
-        }
+        }}
         });
 
         document.querySelectorAll('.cloudleft').forEach(element => {
         element.src = icon;
+        if(icon == "")
+        {
+            element.style.display = "none";
+        }
+        else
+        {
         if(icon != "Images/cloud.png") {
             element.style.height = "100px";
             element.style.width = "100px";
@@ -242,7 +267,7 @@ bar = comparisonChart;
         else {
             element.style.height = "48px";
             element.style.width = "150px";
-        }
+        }}
         });
         }
 
@@ -401,6 +426,25 @@ window.onclick = function(event) {
         document.getElementById("dropdown").style.display = "none";
 }
 }
+
+function detectDeviceType() {
+            const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+
+            // Regular expressions to detect mobile devices
+            if (/windows phone/i.test(userAgent)) {
+                return "Mobile";
+            }
+            if (/android/i.test(userAgent)) {
+                return "Mobile";
+            }
+            if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+                return "Mobile";
+            }
+            return "Desktop";
+        }
+
+        // Display the detected device type
+    
         </script>
         
 
@@ -449,11 +493,11 @@ window.onclick = function(event) {
                 <br>
             -->
             <br>
-                <img class="cloudright" src="Images\cloud.png" alt="Cloud Image">
+                <img id="cloud1" class="cloudright" src="Images\cloud.png" alt="Cloud Image">
                 <br>
-                <img class="cloudleft" src="Images\cloud.png" alt="Cloud Image">
+                <img id="cloud2" class="cloudleft" src="Images\cloud.png" alt="Cloud Image">
                 <br>
-                <img class="cloudright" src="Images\cloud.png" alt="Cloud Image">
+                <img id="cloud3" class="cloudright" src="Images\cloud.png" alt="Cloud Image">
                 <br>
                 <img id="dcloud" class="cloudleft" src="Images\cloud.png" alt="Cloud Image">
             </div> 
@@ -462,7 +506,7 @@ window.onclick = function(event) {
         </div>
 
 
-        <div class="top-container">
+        <div class="top-container" id="ri">
             <div class="card" id="temp-container">
                 <h3>Upcoming Hours</h3>
                 <canvas id="temperatureChart" style="width: 100%; height: 20%"></canvas>
@@ -502,12 +546,12 @@ window.onclick = function(event) {
 
                 <div class="card" style="width: 15%; padding-top: 10px; padding-bottom: 10px;">
                     <div class="horizontal">
-                        <h4 style="text-align: left; width: 100%;">Chance of rain</h4>
+                        <h4 style="text-align: left; width: 100%;">Cloudiness</h4>
                         <div class="circle">
-                            <p class="icon" style="margin: 0;">thunderstorm</p>
+                            <p class="icon" style="margin: 0;">cloud</p>
                         </div>
                     </div>
-                    <h3 class="data" style="text-align: center;" id="chance"><b>82%</b></h3>
+                    <h3 class="data" style="text-align: center;" id="cloudiness"><b>82%</b></h3>
                     <div class="label-container">
                         <div class="dlabel">0%</div>
                         <div class="dlabel">25%</div>
@@ -515,7 +559,7 @@ window.onclick = function(event) {
                         <div class="dlabel">100%</div>
                     </div>
                     <div class="progress-bar-container" style="margin-top: 5px; margin-bottom: 15px;">
-                        <div class="progress-bar chance-of-rain" id="chanceOfRain"></div>
+                        <div class="progress-bar chance-of-rain" id="pcloud"></div>
                     </div>
 
                 </div>
@@ -549,12 +593,12 @@ window.onclick = function(event) {
 
                 <div class="card" style="width: 15%; padding-top: 10px; padding-bottom: 10px;">
                     <div class="horizontal">
-                        <h4 style="text-align: left; width: 100%;">Cloudiness</h4>
+                        <h4 style="text-align: left; width: 100%;">Atmospheric Pressure</h4>
                         <div class="circle">
-                            <p class="icon" style="margin: 0;">cloud</p>
+                            <p class="icon" style="margin: 0;">air</p>
                         </div>
                     </div>
-                    <h3 class="data" style="text-align: center; margin: 0;" id="cloudiness"><b>2 %</b></h3>
+                    <h3 class="data" style="text-align: center; margin: 0;" id="pressure"><b>2 %</b></h3>
 
                 </div>
 
